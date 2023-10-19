@@ -46,8 +46,8 @@ const eventLogin = (io, socket) => {
       const key = ec.keyFromPublic(publicKeyHex, "hex");
       const isVerified = key.verify(msgHash, signature);
       if (isVerified) {
-        const db = await connectDB("User");
-        const collection = db.collection("userSV");
+        const db = await connectDB("Card");
+        const collection = db.collection("students");
         const data = await collection.findOne({ publicKey: publicKeyHex });
         console.log("data", data);
         if (data != null) {

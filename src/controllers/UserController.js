@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 const connectDB = require("../db/mongodb");
 
 async function saveUser(req, res) {
-  const db = await connectDB(req.params.db);
-  const colection = db.collection("userSV");
-  const data = await colection.find({ publicKey: req.body.publicKey });
+  const db = await connectDB('Card');
+  const collection = db.collection("students");
+  const data = await collection.findOne({ publicKey: req.body.publicKey });
   console.log(data);
   if (data == null) {
     const newuser = {

@@ -49,8 +49,8 @@ io.on("connection", (socket) => {
 route(app);
 
 app.get("/",async (req, res) => {
-  const db = await connectDB('User');
-  const collection = db.collection('userSV');
+  const db = await connectDB('Card');
+  const collection = db.collection('students');
   const result = await collection.findOne({code: 'B19DCVT247'});
   console.log(result);
   res.send(result);
