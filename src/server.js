@@ -8,7 +8,7 @@ const eventSinhVien = require("./event-socket/sinhvien");
 const eventPayment = require("./event-socket/payment");
 const eventAddminCard = require("./event-socket/admin.card");
 const route = require("./routes");
-// const { MongoClient, ServerApiVersion } = require("mongodb");
+const connectDB = require("./db/mongodb");
 
 const app = express();
 
@@ -20,36 +20,11 @@ const io = socketIO(server, {
 });
 
 const PORT = process.env.PORT || 3030;
-const uri =
-  process.env.URI_DB ||
-  "mongodb+srv://server-card:server-card@cluster0.hl6q5ua.mongodb.net/?retryWrites=true&w=majority";
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(logger("dev"));
-
-// const client = new MongoClient(uri, {
-//   serverApi: {
-//     version: ServerApiVersion.v1,
-//     strict: true,
-//     deprecationErrors: true,
-//   },
-// });
-
-// async function run() {
-//   try {
-//     // Connect the client to the server (optional starting in v4.7)
-//     await client.connect();
-//     // Send a ping to confirm a successful connection
-//     await client.db("admin").command({ ping: 1 });
-//     console.log("Pinged your deployment. You successfully connected to MongoDB!");
-//   } finally {
-//     // Ensures that the client will close when you finish/error
-//     await client.close();
-//   }
-// }
-// run().catch(console.dir);
 
 io.on("connection", (socket) => {
   console.log("Client connected");
@@ -73,9 +48,13 @@ io.on("connection", (socket) => {
 
 route(app);
 
-app.get('/', (req, res) =>{
-  res.send('Welcom back to server card !!!')
-})
+app.get("/",async (req, res) => {
+  const db = await connectDB('User');
+  const collection = db.collection('userSV');
+  const result = await collection.findOne({code: 'B19DCVT247'});
+  console.log(result);
+  res.send(result);
+});
 
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

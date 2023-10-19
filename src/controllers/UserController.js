@@ -1,38 +1,36 @@
-const mongoose = require('mongoose'); 
-const User = require("../model/User");
+const mongoose = require("mongoose");
+const connectDB = require("../db/mongodb");
 
+async function saveUser(req, res) {
+  const db = await connectDB(req.params.db);
+  const colection = db.collection("userSV");
+  const data = await colection.find({ publicKey: req.body.publicKey });
+  console.log(data);
+  if (data == null) {
+    const newuser = {
+      _id: new mongoose.Types.ObjectId(),
+      publicKey: req.body.publicKey,
+      code: req.body.code,
+    };
 
-async function saveUser (req, res) { 
-    await User.find({publicKey: req.body.publicKey})
-    .then(async data=>{
-        console.log(data);
-        if(data.length == 0) {
-            const user = new User({
-                _id: new mongoose.Types.ObjectId,
-                publicKey: req.body.publicKey,
-                code: req.body.code 
-              });
-              
-              try {
-                  const newUser = await user
-                      .save();
-                  return res.status(201).json({
-                      success: true,
-                      message: 'New cause created successfully',
-                      user: newUser,
-                  });
-              } catch (error) {
-                  console.log(error);
-                  res.status(500).json({
-                      success: false,
-                      message: 'Server error. Please try again.',
-                      error: error.message,
-                  });
-              }
-        }
-    }) 
+    try {
+      const result = await collection.insertOne(newuser);
+      return res.status(201).json({
+        success: true,
+        message: "New cause created successfully",
+        user: result,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        success: false,
+        message: "Server error. Please try again.",
+        error: error.message,
+      });
+    }
+  }
 }
 
 module.exports = {
-    saveUser 
-}
+  saveUser,
+};
