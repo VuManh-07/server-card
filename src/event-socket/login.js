@@ -51,35 +51,37 @@ const eventLogin = (io, socket) => {
         const data = await collection.findOne({ publicKey: publicKeyHex });
         console.log("data", data);
         if (data != null) {
-          api
-            .post("/api/auth/login", {
-              code: data.code,
-              clientID,
-            })
-            .then(({ data }) => {
-              console.log("token", data);
-              io.to(roomID).emit("server-responce-login-page", {
-                result: data.result,
-              });
-            });
+          // api
+          //   .post("/api/auth/login", {
+          //     code: data.code,
+          //     clientID,
+          //   })
+          //   .then(({ data }) => {
+          //     console.log("token", data);
+          //     io.to(roomID).emit("server-responce-login-page", {
+          //       result: data.result,
+          //     });
+          //   });
+          io.to(roomID).emit("server-responce-login-page", {
+            result: true,
+            isVerified,
+            user: data
+          });
         } else {
           io.to(roomID).emit("server-responce-login-page", {
-            result: false,
-            token: "",
+            result: false, 
             message: "Không tồn tại user.",
           });
         }
       } else {
         io.to(roomID).emit("server-responce-login-page", {
-          result: false,
-          token: "",
+          result: false, 
           message: "Please try again.",
         });
       }
     } else {
       io.to(roomID).emit("server-responce-login-page", {
         result: false,
-        token: "",
         message: "Please try again.",
       });
     }
