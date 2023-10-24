@@ -6,17 +6,18 @@ const login = async (req, res) => {
     const db = await connectDB('Card');
     const collection = db.collection("admin");
     try {
-        const admin = await collection.findOne({ username, password })
-        console.log(admin)
+        const admin = await collection.findOne({ username, password });
         if (!admin) {
-          res.status(401).json({
+          res.json({
             message: "Login not successful",
             error: "User not found",
+            admin: ""
           })
         } else {
-          res.status(200).json({
+          res.json({
             message: "Login successful",
             admin,
+            error: ""
           })
         }
       } catch (error) {
