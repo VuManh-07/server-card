@@ -31,6 +31,22 @@ async function saveUser(req, res) {
   }
 }
 
+async function deleteUser(req, res){
+  const code = req.body.code;
+  const db = await connectDB('Card');
+  const collection = db.collection("students");
+  await collection.deleteOne({ code })
+  .then((result) => {
+    console.log(result);
+    res.json({message: "Delete successful."})
+  })
+  .catch((error) => {
+    console.log(error);
+    res.json({message: "Delete fail."})
+  })
+}
+
 module.exports = {
   saveUser,
+  deleteUser
 };
