@@ -35,10 +35,16 @@ async function deleteUser(req, res){
   const code = req.body.code;
   const db = await connectDB('Card');
   const collection = db.collection("students");
+
   await collection.deleteOne({ code })
   .then((result) => {
-    console.log(result);
-    res.json({message: "Delete successful."})
+    if (result.deletedCount === 1) {
+      console.log("Xoá thành công");
+      res.json({ message: "Xoá thành công." });
+    } else {
+      console.log("Không tìm thấy giá trị để xoá");
+      res.json({ message: "Không tìm thấy giá trị để xoá." });
+    }
   })
   .catch((error) => {
     console.log(error);
