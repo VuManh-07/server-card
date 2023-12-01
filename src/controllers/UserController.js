@@ -38,12 +38,10 @@ async function deleteUser(req, res){
 
   await collection.deleteOne({ code })
   .then((result) => {
-    if (result.deletedCount === 1) {
-      console.log("Xoá thành công");
-      res.json({ message: "Xoá thành công." });
-    } else {
-      console.log("Không tìm thấy giá trị để xoá");
-      res.json({ message: "Không tìm thấy giá trị để xoá." });
+    if (result.deletedCount === 1) { 
+      res.json({deletedCount: result.deletedCount, message: "Xoá thành công." });
+    } else { 
+      res.json({deletedCount: result.deletedCount, message: "Không tìm thấy giá trị để xoá." });
     }
   })
   .catch((error) => {
