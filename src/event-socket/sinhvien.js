@@ -11,6 +11,20 @@ const eventSinhVien = (io, socket) =>{
                info: data.info
           })
      })
+
+     socket.on("client-wanna-change-pin", (data) => {
+          io.to(data.roomID).emit("request-change-pin", {
+               oldPin: data.oldPin, 
+               newPin: data.newPin
+          })
+     })
+
+     socket.on("card-response-result-change-pin", (data) => {
+          io.to(data.roomID).emit("response-change-pin", {
+               result: data.result,
+               message: data.message
+          })
+     })
 }
 
 module.exports = eventSinhVien;

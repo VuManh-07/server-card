@@ -13,6 +13,7 @@ const eventLogin = (io, socket) => {
   });
 
   socket.on("card-response-result-login-card", (data) => {
+    console.log("card-response-result-login-card", data);
     io.to(data.roomID).emit("card-response-login-card", {
       result: data.result,
       message: data.message,
