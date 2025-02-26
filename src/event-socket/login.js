@@ -14,7 +14,11 @@ const eventLogin = (io, socket) => {
   });
 
   socket.on("card-response-result-login-card", (data) => {
+<<<<<<< HEAD
     console.log("data", data);
+=======
+    console.log("card-response-result-login-card", data);
+>>>>>>> 3f0f35c262ce854eeb58935d95b1b9d05408cfc8
     io.to(data.roomID).emit("card-response-login-card", {
       result: data.result,
       message: data.message,

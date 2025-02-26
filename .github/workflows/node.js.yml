@@ -1,0 +1,47 @@
+name: Node.js CI server card the SV
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+
+      - name: Remove Git index.lock if it exists
+        run: |
+          if [ -f "/home/ubuntu/server-card-theSV/_work/server-card/server-card/.git/index.lock" ]; then
+            rm -f /home/ubuntu/server-card-theSV/_work/server-card/server-card/.git/index.lock
+          fi
+
+      - run: npm install
+      - run: npm ci
+
+      - name: Install PM2 (if not installed)
+        run: npm install -g pm2
+
+      - name: Stop existing PM2 process if running
+        run: |
+          if pm2 info server-card-theSV > /dev/null; then
+            pm2 stop server-card-theSV
+            pm2 delete server-card-theSV
+          fi
+
+      - name: Start PM2 process
+        run: pm2 start npm --name server-card-theSV
+
+      - name: Save PM2 process list
+        run: pm2 save
