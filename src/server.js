@@ -8,7 +8,6 @@ const eventSinhVien = require("./event-socket/sinhvien");
 const eventPayment = require("./event-socket/payment");
 const eventAddminCard = require("./event-socket/admin.card");
 const route = require("./routes");
-const connectDB = require("./db/mongodb");
 
 const app = express();
 
@@ -46,14 +45,14 @@ io.on("connection", (socket) => {
   });
 });
 
+//connect db
+require("./db/mongodb");
+
+// route
 route(app);
 
-app.get("/",async (req, res) => {
-  const db = await connectDB('Card');
-  const collection = db.collection('students');
-  const result = await collection.findOne({code: 'B19DVCT247'});
-  console.log(result);
-  res.send(result);
+app.get("/", async (req, res) => {
+  res.send({ name: "VĐM", code: "B19DCVT247", class: "D19CQVT07-B" });
 });
 
 server.listen(PORT, () => {

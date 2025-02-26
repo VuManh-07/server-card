@@ -1,56 +1,69 @@
 const mongoose = require("mongoose");
-const connectDB = require("../db/mongodb");
+const userModel = require("../model/User");
 
 async function saveUser(req, res) {
-  const db = await connectDB('Card');
-  const collection = db.collection("students");
-  const data = await collection.findOne({ publicKey: req.body.publicKey });
-  console.log(data);
-  if (data == null) {
-    const newuser = {
+  try {
+    const data = await userModel.findOne({ publicKey: req.body.publicKey });
+    console.log(data);
+
+    if (data !== null) {
+      return res.status(400).json({
+        success: false,
+        message: "User already exists",
+      });
+    }
+
+    const newuser = new userModel({
       _id: new mongoose.Types.ObjectId(),
       publicKey: req.body.publicKey,
       code: req.body.code,
-    };
+      name: req.body.name,
+    });
 
-    try {
-      const result = await collection.insertOne(newuser);
-      return res.status(201).json({
-        success: true,
-        message: "New cause created successfully",
-        user: result,
-      });
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({
-        success: false,
-        message: "Server error. Please try again.",
-        error: error.message,
-      });
-    }
+    const result = await newuser.save();
+
+    return res.status(201).json({
+      success: true,
+      message: "User created successfully",
+      user: result,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error. Please try again.",
+      error: error.message,
+    });
   }
 }
 
-async function deleteUser(req, res){
-  const code = req.body.code;
-  const db = await connectDB('Card');
-  const collection = db.collection("students");
+async function deleteUser(req, res) {
+  try {
+    const code = req.body.code;
+    const result = await userModel.deleteOne({ code });
 
-  await collection.deleteOne({ code })
-  .then((result) => {
-    if (result.deletedCount === 1) { 
-      res.json({deletedCount: result.deletedCount, message: "Xoá thành công." });
-    } else { 
-      res.json({deletedCount: result.deletedCount, message: "Không tìm thấy giá trị để xoá." });
+    if (result.deletedCount === 1) {
+      return res.json({
+        deletedCount: result.deletedCount,
+        message: "Xoá thành công.",
+      });
+    } else {
+      return res.json({
+        deletedCount: result.deletedCount,
+        message: "Không tìm thấy giá trị để xoá.",
+      });
     }
-  })
-  .catch((error) => {
-    console.log(error);
-    res.json({message: "Delete fail."})
-  })
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Delete failed.",
+      error: error.message,
+    });
+  }
 }
 
 module.exports = {
   saveUser,
-  deleteUser
+  deleteUser,
 };

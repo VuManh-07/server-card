@@ -5,6 +5,7 @@ const ec = new elliptic.ec("secp256k1");
 const crypto = require("crypto");
 const api = require("../utils/axios");
 const connectDB = require("../db/mongodb");
+const userModel = require("../model/User");
 
 const eventLogin = (io, socket) => {
   //Handle event login card
@@ -13,9 +14,11 @@ const eventLogin = (io, socket) => {
   });
 
   socket.on("card-response-result-login-card", (data) => {
+    console.log("data", data);
     io.to(data.roomID).emit("card-response-login-card", {
       result: data.result,
       message: data.message,
+      code: "B19DCVT247",
     });
   });
 
@@ -46,9 +49,7 @@ const eventLogin = (io, socket) => {
       const key = ec.keyFromPublic(publicKeyHex, "hex");
       const isVerified = key.verify(msgHash, signature);
       if (isVerified) {
-        const db = await connectDB("Card");
-        const collection = db.collection("students");
-        const data = await collection.findOne({ publicKey: publicKeyHex });
+        const data = await userModel.findOne({ publicKey: "0x0" });
         console.log("data", data);
         if (data != null) {
           // api
@@ -65,17 +66,17 @@ const eventLogin = (io, socket) => {
           io.to(roomID).emit("server-responce-login-page", {
             result: true,
             isVerified,
-            user: data
+            user: data,
           });
         } else {
           io.to(roomID).emit("server-responce-login-page", {
-            result: false, 
+            result: false,
             message: "Không tồn tại user.",
           });
         }
       } else {
         io.to(roomID).emit("server-responce-login-page", {
-          result: false, 
+          result: false,
           message: "Please try again.",
         });
       }

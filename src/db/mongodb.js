@@ -1,19 +1,44 @@
-const { MongoClient } = require('mongodb');
+"use strict";
 
-const uri =
-  process.env.URI_DB ||
-  "mongodb+srv://manh1507:manh1507@cluster0.hl6q5ua.mongodb.net/?retryWrites=true&w=majority";
-const client = new MongoClient(uri);
+const mongoose = require("mongoose");
 
-async function connectDB(name) {
-  try {
-    await client.connect();
-    console.log('Connected to the database');
-    return client.db(name);
-  } catch (error) {
-    console.error('Error connecting to the database', error);
+const MONGODB_URL_CONNECT =
+  "mongodb+srv://fidec_db:eVB2e87fKvOYpu7P@fidec.qdlbpgl.mongodb.net";
+const MONGODB_NAME = "PtitDbCardSV";
+
+// const connectStr = `${MONGODB_URL_CONNECT}/${MONGODB_NAME}`;
+
+const connectStr = `mongodb://127.0.0.1:27017/${MONGODB_NAME}`;
+
+class Database {
+  static instance;
+
+  constructor() {
+    this.connect();
+  }
+
+  connect(type = "mongodb") {
+    mongoose.set("debug", true);
+    mongoose.set("debug", { color: true });
+
+    mongoose
+      .connect(connectStr, { maxPoolSize: 50 })
+      .then(() => {
+        console.log("Connected to MongoDB");
+        // countConnect();
+      })
+      .catch((err) => console.log("Failed to connect to MongoDB:", err));
+  }
+
+  static getInstance() {
+    if (!Database.instance) {
+      Database.instance = new Database();
+    }
+
+    return Database.instance;
   }
 }
 
+const instanceMongodb = Database.getInstance();
 
-module.exports = connectDB;
+module.exports = instanceMongodb;
